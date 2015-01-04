@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="lib/require.js"></script>
+        <script type="text/javascript" src="lib/qpf/js/qpf.amd.js"></script>
+        <script type="text/javascript" src="lib/stats.js"></script>
+        <script type="text/javascript" src="lib/FileSaver.js"></script>
+        <link rel="stylesheet" href="lib/qpf/css/naive.css" />
+        <link rel="stylesheet" href="lib/qpf/css/light.css" />
+        <link rel="stylesheet" href="css/camera_track_editor.css" />
+    </head>
+    <body style="margin:0px;">
+        <script>
+            requirejs.config({
+                paths: {
+                    'knockout': './lib/knockout',
+                    'qtek': './lib/qtek',
+                    _: './lib/underscore',
+                    $: './lib/jquery'
+                },
+                shim : {
+                    '$' : {
+                        exports : "$"
+                    },
+                    '_' : {
+                        exports : "_"
+                    }
+                }
+            })
+            require([
+                'js/cameraTrackEditor',
+                'qpf'
+            ], function(main, qpf){
+                main.start();
+            });
+        </script>
+    </body>
+</html>

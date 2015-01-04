@@ -1,0 +1,52 @@
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="lib/require.js"></script>
+        <style>
+            body{
+                background: -webkit-radial-gradient(center, circle cover, #555a5f 0%, #1c1e20 100%);
+            }
+            #result {
+                position: absolute;
+                top: 0px;
+                bottom: 0px;
+                right: 0px;
+                left: 0px;
+            }
+            #result img {
+                width: 100%;
+                height: 100%;
+            }
+            .opr-worldcup_2014 {
+                position: fixed;
+
+                right: 100px;
+                top: 500px;
+            }
+        </style>
+    </head>
+    <body style="margin:0px;">
+        <div class="opr-worldcup_2014"></div>
+        <script>
+            require.config({
+                paths: {
+                    qtek: 'lib/qtek',
+                    OIMO: 'lib/Oimo'
+                },
+                shim: {
+                    'OIMO' : {
+                        exports: 'OIMO'
+                    }
+                }
+            });
+            require([
+                'qtek',
+                'js/main'
+            ], function(qtek, main){
+                main.playBGM = function() {
+                }
+            });
+        </script>
+    </body>
+</html>

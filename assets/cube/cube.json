@@ -1,0 +1,174 @@
+{
+    "accessors": {
+        "attrbute_1": {
+            "bufferView": "bufferView_4",
+            "byteOffset": 0,
+            "byteStride": 12,
+            "count": 96,
+            "max": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "min": [
+                -1.0,
+                -1.000001,
+                -1.0,
+                1.0
+            ],
+            "type": 35665
+        },
+        "attrbute_2": {
+            "bufferView": "bufferView_4",
+            "byteOffset": 1152,
+            "byteStride": 12,
+            "count": 96,
+            "max": [
+                0.9867855,
+                0.9867855,
+                0.9867855,
+                1.0
+            ],
+            "min": [
+                -0.9867855,
+                -0.9867855,
+                -0.9867855,
+                1.0
+            ],
+            "type": 35665
+        },
+        "indices_3": {
+            "bufferView": "bufferView_5",
+            "byteOffset": 0,
+            "count": 564,
+            "type": 5123
+        }
+    },
+    "animations": {},
+    "asset": {},
+    "bufferViews": {
+        "bufferView_4": {
+            "buffer": "cube.bin",
+            "byteLength": 2304,
+            "byteOffset": 0,
+            "target": 34962
+        },
+        "bufferView_5": {
+            "buffer": "cube.bin",
+            "byteLength": 1128,
+            "byteOffset": 2304,
+            "target": 34963
+        }
+    },
+    "buffers": {
+        "cube.bin": {
+            "byteLength": 3432,
+            "path": "cube.bin"
+        }
+    },
+    "cameras": {},
+    "images": {},
+    "lights": {},
+    "materials": {
+        "Material": {
+            "instanceTechnique": {
+                "technique": "technique_0",
+                "values": {
+                    "ambient": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "diffuse": [
+                        0.64,
+                        0.64,
+                        0.64
+                    ],
+                    "emission": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "transparency": 1
+                }
+            },
+            "name": "Material"
+        }
+    },
+    "meshes": {
+        "Cube-mesh": {
+            "name": "Cube",
+            "primitives": [
+                {
+                    "attributes": {
+                        "NORMAL": "attrbute_2",
+                        "POSITION": "attrbute_1"
+                    },
+                    "indices": "indices_3",
+                    "material": "Material"
+                }
+            ]
+        }
+    },
+    "nodes": {
+        "Cube": {
+            "children": [],
+            "matrix": [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "meshes": [
+                "Cube-mesh"
+            ],
+            "name": "Cube"
+        }
+    },
+    "samplers": {},
+    "scene": "Scene",
+    "scenes": {
+        "Scene": {
+            "nodes": [
+                "Cube"
+            ]
+        }
+    },
+    "shaders": {},
+    "skins": {},
+    "techniques": {
+        "technique_0": {
+            "parameters": {},
+            "pass": "defaultPass",
+            "passes": {
+                "defaultPass": {
+                    "instanceProgram": {
+                        "attributes": {},
+                        "program": "",
+                        "uniforms": {}
+                    },
+                    "states": {
+                        "blendEnable": false,
+                        "cullFaceEnable": false,
+                        "depthMask": true,
+                        "depthTestEnable": true
+                    }
+                }
+            }
+        }
+    },
+    "textures": {}
+}

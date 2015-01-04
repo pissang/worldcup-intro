@@ -1,0 +1,113 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="lib/require.js"></script>
+        <script type="text/javascript" src="lib/stats.js"></script>
+        <style>
+            body{
+                background: -webkit-radial-gradient(center, circle cover, #555a5f 0%, #1c1e20 100%);
+            }
+            #logo {
+                position: absolute;
+                left: 10px;
+                top: 10px;
+            }
+        </style>
+    </head>
+    <body style="margin:0px;">
+        <canvas width="1200" height="640" id="main"></canvas>
+        <script>
+            requirejs.config({
+                paths: {
+                    qtek: './lib/qtek'
+                }
+            })
+            require([
+                'qtek',
+                'js/mosaic',
+                'js/instancing',
+                'js/bokeh',
+                'js/Ground',
+                'js/Leaves'
+            ], function(qtek, mosaic, instancing, bokeh, Ground, Leaves) {
+                var canvas = document.createElement('canvas');
+                //----------------------------------
+                // Prepare scene
+                //----------------------------------
+                var Shader = qtek.Shader;
+
+                var renderer = new qtek.Renderer({
+                    canvas : document.getElementById('main'),
+                    devicePixelRatio: 1.0
+                });
+                var shadowMapPass = new qtek.prePass.ShadowMap();
+
+                renderer.resize(window.innerWidth, window.innerHeight);
+                var scene = new qtek.Scene();
+                var camera = new qtek.camera.Perspective({
+                    aspect: renderer.canvas.width / renderer.canvas.height
+                });
+                camera.position.set(0, 0, 1000);
+
+                var leaves = new Leaves(camera);
+
+                var light = new qtek.light.Directional({
+                    shadowResolution : 1024,
+                    shadowBias: 0.005,
+                    intensity: 0.7
+                });
+                scene.add(new qtek.light.Ambient({
+                    intensity: 0.3
+                }))
+                light.position.set(0, 40, 40);
+                light.lookAt(scene.position);
+                scene.add(light);
+
+                var root = new qtek.Node();
+                scene.add(root);
+                scene.add(new Ground());
+
+                var leafList = leaves.init(2000);
+
+                var compositor = bokeh(renderer, scene, camera);
+
+                var planeGeo = new qtek.geometry.Plane();
+
+                compositor.setFocalPlane(50);
+
+                var animation = new qtek.animation.Animation();
+                animation.start();
+
+                leafList.forEach(function(mesh) {
+                    mesh.visible = false;
+                    scene.add(mesh);
+                });
+
+                instancing(leafList, 20).forEach(function(mesh) {
+                    scene.add(mesh);
+                });
+
+                animation.on('frame', function(deltaTime) {
+
+                    stats.begin();
+                    compositor.updateParameters();
+                    compositor.render(renderer);
+
+                    leaves.update(deltaTime);
+                    stats.end();
+                });
+
+                document.body.addEventListener('mousemove', function(e) {
+                    var dx = e.pageX - window.innerWidth / 2;
+                    root.rotation.identity().rotateY(dx / 1000);
+                });
+
+                var stats = new Stats();
+                stats.domElement.style.position = 'absolute';
+                stats.domElement.style.right = '20px';
+                stats.domElement.style.top = '20px';
+                document.body.appendChild(stats.domElement);
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,125 @@
+.qpf-ui-panel {
+  background-color: transparent;
+  box-shadow: none;
+}
+.qpf-ui-panel .qpf-panel-header {
+  background-color: #E6E6E6;
+  color: #111;
+}
+.qpf-ui-panel .qpf-panel-body {
+  background-color: white;
+}
+.qpf-ui-tab .qpf-tab-body {
+  background-color: white;
+}
+.qpf-ui-checkbox {
+  color: #111;
+}
+.qpf-ui-tab > .qpf-tab-header > .qpf-tab-tabs {
+  height: 23px;
+}
+.qpf-ui-tab > .qpf-tab-header > .qpf-tab-tabs > li {
+  background-color: #ccc;
+  border-top: none;
+}
+.qpf-ui-tab > .qpf-tab-header > .qpf-tab-tabs > li.actived {
+  background-color: white;
+}
+.qpf-ui-tab > .qpf-tab-header > .qpf-tab-tabs > li > a {
+  color: #111;
+}
+.qpf-ui-tab .qpf-tab-body {
+  border: none;
+}
+.qpf-ui-label label {
+  color: #111;
+}
+.qpf-ui-textfield {
+  background-color: #DADADA;
+  border: none;
+  box-shadow: none;
+}
+.qpf-ui-textfield input {
+  color: #111;
+}
+.qpf-ui-spinner {
+  background-color: #DADADA;
+  border: none;
+  box-shadow: none;
+}
+.qpf-ui-spinner .qpf-left input {
+  color: #111;
+}
+.qpf-ui-button,
+.qpf-common-button {
+  background-color: #FFF;
+  color: #111;
+  border: 1px solid #948EFE;
+  box-sizing: border-box;
+}
+.qpf-ui-button:hover,
+.qpf-common-button:hover,
+.qpf-ui-button.hover,
+.qpf-common-button.hover {
+  background-color: #BAC3FF;
+  color: white;
+}
+.qpf-ui-button:active,
+.qpf-common-button:active,
+.qpf-ui-button.active,
+.qpf-common-button.active {
+  background-color: #BAC3FF;
+  color: white;
+}
+.qpf-ui-combobox {
+  border: none;
+}
+.qpf-ui-combobox > .qpf-combobox-selected > .qpf-left {
+  color: #111;
+  background-color: #DADADA;
+}
+.qpf-ui-combobox > .qpf-combobox-selected > .qpf-right {
+  border: 1px solid #948EFE;
+}
+.qpf-ui-combobox > .qpf-combobox-selected > .qpf-right .qpf-icon {
+  background-image: url(../images/light/arrow-down.svg);
+}
+.qpf-ui-combobox ul.qpf-combobox-items {
+  border: none;
+}
+.qpf-ui-combobox ul.qpf-combobox-items > li {
+  color: #111;
+  border-bottom: 1px solid #999;
+  background-color: #DADADA;
+}
+.qpf-ui-combobox ul.qpf-combobox-items > li:hover {
+  color: black;
+  background-color: #CCC;
+}
+.qpf-ui-combobox.active > .qpf-combobox-selected > .qpf-right .qpf-icon {
+  background-image: url(../images/arrow-up.svg);
+}
+.qpf-ui-palette ui.qpf-palette-recent > li {
+  box-shadow: none;
+}
+.qpf-ui-color .qpf-color-preview {
+  border: 1px solid #948EFE;
+}
+.qpf-ui-slider .qpf-slider-groove {
+  background: none;
+  box-shadow: none;
+  border: 1px solid #3D3D3D;
+}
+.qpf-ui-slider .qpf-slider-control .qpf-slider-value {
+  background: #DADADA;
+  color: #111;
+}
+.qpf-ui-slider .qpf-slider-percentage {
+  margin: 0px;
+}
+.qpf-ui-slider.horizontal .qpf-slider-percentage {
+  height: 3px;
+}
+.qpf-ui-slider.vertical .qpf-slider-percentage {
+  width: 3px;
+}

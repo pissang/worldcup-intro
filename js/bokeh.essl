@@ -1,0 +1,167 @@
+@export bokeh
+
+#define SAMPLES 3
+#define RINGS 3
+
+varying vec2 v_Texcoord;
+
+uniform sampler2D tColor;
+uniform sampler2D tDepth;
+uniform float textureWidth;
+uniform float textureHeight;
+
+const float PI = 3.14159265;
+
+float width = textureWidth; //texture width
+float height = textureHeight; //texture height
+
+vec2 texel = vec2(1.0/width,1.0/height);
+
+uniform float focalDepth: 40;  //focal distance value in meters, but you may use autofocus option below
+uniform float focalLength: 35; //focal length in mm
+uniform float fstop: 2.2; //f-stop value
+
+/*
+make sure that these two values are the same for your camera, otherwise distances will be wrong.
+*/
+
+uniform float znear: 0.1; // camera clipping start
+uniform float zfar: 2000; // camera clipping end
+
+//------------------------------------------
+//user variables
+
+const int samples = SAMPLES; //samples on the first ring
+const int rings = RINGS; //ring count
+
+const int maxringsamples = rings * samples;
+
+float CoC = 0.03; //circle of confusion size in mm (35mm film = 0.03mm)
+
+// autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right)
+// if center of screen use vec2(0.5, 0.5);
+
+uniform float maxblur: 1.0;
+//clamp value of max blur (0.0 = no blur, 1.0 default)
+
+uniform float threshold: 0.5; // highlight threshold;
+uniform float gain: 2.0; // highlight gain;
+
+uniform float bias: 0.5; // bokeh edge bias
+uniform float fringe: 0.7; // bokeh chromatic aberration / fringing
+
+uniform float dithering: 0.0001;
+
+const vec3 lumcoeff = vec3(0.299,0.587,0.114);
+
+vec3 color(vec2 coords,float blur) {
+    //processing the sample
+
+    vec3 col = vec3(0.0);
+
+    col.r = texture2D(tColor,coords + vec2(0.0,1.0)*texel*fringe*blur).r;
+    col.g = texture2D(tColor,coords + vec2(-0.866,-0.5)*texel*fringe*blur).g;
+    col.b = texture2D(tColor,coords + vec2(0.866,-0.5)*texel*fringe*blur).b;
+
+    float lum = dot(col.rgb, lumcoeff);
+    float thresh = max((lum-threshold)*gain, 0.0);
+    return col+mix(vec3(0.0),col,thresh*blur);
+}
+
+vec2 rand(vec2 coord) {
+    // generating noise / pattern texture for dithering
+
+    float noiseX = ((fract(1.0-coord.s*(width/2.0))*0.25)+(fract(coord.t*(height/2.0))*0.75))*2.0-1.0;
+    float noiseY = ((fract(1.0-coord.s*(width/2.0))*0.75)+(fract(coord.t*(height/2.0))*0.25))*2.0-1.0;
+
+    noiseX = clamp(fract(sin(dot(coord ,vec2(12.9898,78.233))) * 43758.5453),0.0,1.0)*2.0-1.0;
+    noiseY = clamp(fract(sin(dot(coord ,vec2(12.9898,78.233)*2.0)) * 43758.5453),0.0,1.0)*2.0-1.0;
+
+    return vec2(noiseX,noiseY);
+}
+
+float linearize(float depth) {
+    return -zfar * znear / (depth * (zfar - znear) - zfar);
+}
+
+float gather(float i, float j, int ringsamples, inout vec4 col, float w, float h, float blur) {
+    float rings2 = float(rings);
+    float step = PI*2.0 / float(ringsamples);
+    float pw = cos(j*step)*i;
+    float ph = sin(j*step)*i;
+    float p = 1.0;
+
+    // col.rgb += color(v_Texcoord.xy + vec2(pw*w,ph*h), blur) * mix(1.0, i/rings2, bias) * p;
+    // col.a += texture2D(tColor, v_Texcoord.xy + vec2(pw*w,ph*h) * blur).a * mix(1.0, i/rings2, bias);
+    vec4 tex = texture2D(tColor, v_Texcoord.xy + vec2(pw * w, ph * h) * blur);
+
+    float lum = dot(tex.rgb, lumcoeff);
+    float thresh = max((lum-threshold) * gain, 0.0);
+    tex.rgb += mix(vec3(0.0), tex.rgb, thresh*blur);
+
+    tex *= mix(1.0, i/rings2, bias) * p;
+
+    col.rgb += tex.rgb;
+    col.a += tex.a;
+    
+    return 1.0 * mix(1.0, i /rings2, bias) * p;
+}
+
+void main() {
+    //scene depth calculation
+
+    float depth = linearize(texture2D(tDepth,v_Texcoord.xy).x);
+
+    //focal plane calculation
+    float f = focalLength; // focal length in mm
+    float d = focalDepth*1000.0; // focal plane in mm
+    float o = depth*1000.0; // depth in mm
+
+    float a = (o*f)/(o-f);
+    float b = (d*f)/(d-f);
+    float c = (d-f)/(d*fstop*CoC);
+
+    float blur = abs(a-b)*c;
+
+    blur = clamp(blur,0.0,1.0);
+
+    // calculation of pattern for dithering
+
+    vec2 noise = rand(v_Texcoord.xy)*dithering*blur;
+
+    // getting blur x and y step factor
+
+    float w = (1.0/width)*blur*maxblur+noise.x;
+    float h = (1.0/height)*blur*maxblur+noise.y;
+
+    // calculation of final color
+
+    vec4 col = vec4(0.0);
+
+    if(blur < 0.05) {
+        //some optimization thingy
+        col = texture2D(tColor, v_Texcoord.xy);
+    } else {
+        col = texture2D(tColor, v_Texcoord.xy);
+        float s = 1.0;
+        int ringsamples;
+
+        for (int i = 1; i <= rings; i++) {
+            /*unboxstart*/
+            ringsamples = i * samples;
+
+            for (int j = 0 ; j < maxringsamples ; j++) {
+                if (j >= ringsamples) break;
+                s += gather(float(i), float(j), ringsamples, col, w, h, blur);
+            }
+            /*unboxend*/
+        }
+
+        col /= s; //divide by sample count
+    }
+
+    gl_FragColor.rgb = col.rgb;
+    gl_FragColor.a = col.a;
+}
+
+@end

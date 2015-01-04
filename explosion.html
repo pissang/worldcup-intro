@@ -1,0 +1,234 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="lib/require.js"></script>
+        <script type="text/javascript" src="lib/stats.js"></script>
+        <style>
+            body{
+                background: -webkit-radial-gradient(center, circle cover, #555a5f 0%, #1c1e20 100%);
+            }
+            #logo {
+                position: absolute;
+                left: 10px;
+                top: 10px;
+            }
+        </style>
+    </head>
+    <body style="margin:0px;">
+        <canvas width="1200" height="640" id="main"></canvas>
+        <img src="assets/logo.png" id="logo" alt="" width="80">
+        <script>
+            requirejs.config({
+                paths: {
+                    qtek: './lib/qtek'
+                }
+            });
+            require([
+                'qtek',
+                'js/mosaic',
+                'js/instancing',
+                'js/bokeh'
+            ], function(qtek, mosaic, instancing, bokeh){
+
+                //----------------------------------
+                // Prepare data
+                //----------------------------------
+                var positionArr = [];
+                var colorArr = [];
+
+                var canvas = document.createElement('canvas');
+                var logoImg = document.getElementById('logo');
+
+                var width = logoImg.width;
+                var height = logoImg.height;
+                canvas.width = width;
+                canvas.height = height;
+
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(logoImg, 0, 0, width, height);
+                var pixels = ctx.getImageData(0, 0, width, height).data;
+
+                for (var i = 0; i < pixels.length;) {
+                    var idx = i / 4;
+
+                    var r = pixels[i++];
+                    var g = pixels[i++];
+                    var b = pixels[i++];
+                    var a = pixels[i++];
+                    // Transparent node
+                    if (a < 100) {
+                        continue;
+                    }
+
+                    var x = (idx % width) / width * 40 - 20;
+                    var y = 20 - Math.floor(idx / width) / height * 40;
+                    var z = Math.random() * 0.2;
+
+                    positionArr.push([x, y, z]);
+                    colorArr.push([r / 255, g / 255, b / 255]);
+                }
+
+                var randomExplodedPositions = [];
+                var minR = 4;
+                var maxR = 20;
+                var minTheta = -Math.PI / 3;
+                var maxTheta = Math.PI / 3;
+                var rand = Math.random;
+
+                for (var i = 0; i < positionArr.length; i++) {
+                    var r = rand() * (maxR - minR) + minR;
+                    var theta = rand() * (maxTheta - minTheta) + minTheta;
+                    var phi = rand() * Math.PI * 2;
+                    var x = Math.cos(phi) * r * Math.cos(theta);
+                    var y = Math.sin(theta) * r;
+                    var z = Math.sin(phi) * r * Math.cos(theta);
+                    randomExplodedPositions.push([x, y, z]);
+                }
+
+                //----------------------------------
+                // Prepare scene
+                //----------------------------------
+                var Shader = qtek.Shader;
+
+                var renderer = new qtek.Renderer({
+                    canvas : document.getElementById('main'),
+                    devicePixelRatio: 1.0
+                });
+
+                renderer.resize(window.innerWidth, window.innerHeight);
+                var scene = new qtek.Scene();
+                var camera = new qtek.camera.Perspective({
+                    aspect: renderer.canvas.width / renderer.canvas.height
+                });
+                camera.position.set(0, 0, 50);
+
+                var shader = qtek.shader.library.get('buildin.physical');
+
+                var root = new qtek.Node();
+                scene.add(root);
+
+                var cubeList = [];
+
+                var compositor = bokeh(renderer, scene, camera);
+
+                compositor.setFocalPlane(50);
+
+                var gltfLoader = new qtek.loader.GLTF();
+                gltfLoader.load('assets/cube/cube.json');
+                gltfLoader.success(function(res) {
+
+                    // var cubeGeo = new qtek.geometry.Cube();
+
+                    var cubeGeo = res.scene.getNode('Cube').geometry;
+
+                    var specularColor = [0.1, 0.1, 0.1];
+                    var emission = [0, 0, 0];
+                    var lineColor = [0, 0, 0];
+
+                    for (var i = 0; i < positionArr.length; i++) {
+                        var position = positionArr[i];
+                        var cubeMat = new qtek.Material({
+                            shader : shader
+                        });
+                        cubeMat.set('specularColor', specularColor);
+                        cubeMat.set('emission', emission);
+                        cubeMat.set('lineColor', lineColor);
+
+                        var mesh = new qtek.Mesh({
+                            material: cubeMat,
+                            geometry: cubeGeo,
+                            visible: false
+                        });
+                        mesh.position.setArray(position);
+
+                        mesh.rotation.rotateX(Math.random() * Math.PI * 2);
+                        mesh.rotation.rotateZ(Math.random() * Math.PI * 2);
+
+                        mesh.scale.set(0.2, 0.2, 0.2);
+
+                        cubeMat.set('color', colorArr[i]);
+                        root.add(mesh);
+
+                        cubeList.push(mesh);
+                    }
+
+                    var instancedMeshes = instancing(cubeList, 20);
+                    instancedMeshes.forEach(function(mesh) {
+                        scene.add(mesh);
+                    });
+
+                    var light = new qtek.light.Directional({
+                        shadowResolution : 1024,
+                        shadowBias: 0.005
+                    });
+                    light.position.set(0, 40, 40);
+                    light.lookAt(scene.position);
+                    scene.add(light);
+
+                    var animation = new qtek.animation.Animation();
+                    animation.start();
+
+                    document.body.addEventListener('mousemove', function(e) {
+                        var dx = e.pageX - window.innerWidth / 2;
+                        root.rotation.identity().rotateY(dx / 1000);
+                    });
+
+                    var stats = new Stats();
+                    stats.domElement.style.position = 'absolute';
+                    stats.domElement.style.right = '20px';
+                    stats.domElement.style.top = '20px';
+                    document.body.appendChild(stats.domElement);
+
+                    animation.on('frame', function(deltaTime) {
+                        stats.begin();
+                        // shadowMapPass.render(renderer, scene, camera);
+                        // renderer.render(scene, camera);
+                        compositor.updateParameters();
+                        compositor.render(renderer);
+
+                        stats.end();
+
+                        for (var i = 0; i < cubeList.length; i++) {
+                            qtek.math.Quaternion.rotateY(cubeList[i].rotation, cubeList[i].rotation, deltaTime / 500);
+                        }
+                    });
+
+                    function during(target) {
+                        target._dirty = true;
+                    }
+                    var count = 0;
+                    function done() {
+                        count--;
+                        if (count == 0) {
+                            inExplosion = !inExplosion;
+                            explode();
+                        }
+                    }
+                    var inExplosion = false;
+
+                    function explode() {
+                        count = cubeList.length;
+                        for (var i = 0; i < cubeList.length; i++) {
+                            animation.animate(cubeList[i].position)
+                                .delay(2000 + 200 * Math.random())
+                                .when(1000, {
+                                    _array: inExplosion ?
+                                        positionArr[i]
+                                        : randomExplodedPositions[i]
+                                })
+                                .during(during)
+                                .done(done)
+                                .start(
+                                    inExplosion ?
+                                    'ExponentialIn'
+                                    : 'ExponentialOut'
+                                );
+                        }
+                    }
+
+                    explode();
+                });
+            });
+        </script>
+    </body>
+</html>

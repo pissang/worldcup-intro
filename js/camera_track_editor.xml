@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+    <hbox height="100%">
+        <vbox width="200" resizeHandles="r" resizeMinWidth="200" resizable="true">
+            <panel title="球员" style="margin:3px" id="players">
+                <list flex="1" dataSource="@binding[playerList]" onselect="@binding[selectPlayer]"></list>
+            </panel>
+            <panel title="摄像机" style="margin:3px" id="cameras">
+                <list flex="2" dataSource="@binding[cameraList]" onselect="@binding[selectCamera]"></list>
+            </panel>
+        </vbox>
+        <vbox>
+            <nativehtml style="margin:3px" id="main">
+                <![CDATA[
+                    <canvas id="viewport"></canvas>
+                    <div id="camera-ops">
+                        <button class="qpf-common-button" id="focus">聚焦</button>
+                        <button class="qpf-common-button" id="create-camera-from-current">从当前视角新建</button>
+                        <button class="qpf-common-button" id="camera-control">第三视角</button>
+                        <button class="qpf-common-button" id="toggle-camera">自由视角</button>
+                    </div>
+                    <button class="qpf-common-button" id="download">下载</button>
+                    <button class="qpf-common-button" id="play">播放</button>
+                ]]>
+            </nativehtml>
+            <container id="timeline" style="margin:3px;" height="40" resizeHandles="t" resizeMinHeight="40" resizable="true">
+                <list dataSource="@binding[cameraList]" itemView="@binding[KeyFrameUI]" height='100%'></list>
+                <keyframehandle time="@binding[currentTime]"></keyframehandle>
+            </container>
+        </vbox>
+        <tab width="300" resizeHandles="l" resizeMinWidth="200" resizable="true">
+            <panel title="摄像机">
+                <textfield text="@binding[cameraTitle]"></textfield>
+                <label style="margin:7px 3px 3px 3px;">摄像机位置:</label>
+                <vector>
+                    <spinner value="@binding[cameraX]"></spinner>
+                    <spinner value="@binding[cameraY]"></spinner>
+                    <spinner value="@binding[cameraZ]"></spinner>
+                </vector>
+                <label style="margin:7px 3px 3px 3px;">摄像机指向:</label>
+                <vector>
+                    <spinner value="@binding[cameraTargetX]"></spinner>
+                    <spinner value="@binding[cameraTargetY]"></spinner>
+                    <spinner value="@binding[cameraTargetZ]"></spinner>
+                </vector>
+                <label style="margin:7px 3px 3px 3px;">时间:</label>
+                <spinner min="0" step="10" precision="0" value="@binding[cameraTime]"></spinner>
+                <label style="margin:7px 3px 3px 3px;">焦平面:</label>
+                <spinner min="0" step="1" precision="0" value="@binding[focalPlane]"></spinner>
+                <checkbox checked="@binding[dofMode]" label="景深模式"></checkbox>
+                <label style="margin:7px 3px 3px 3px;">回放速率:</label>
+                <spinner min="0" max="3" step="0.02" precision="2" value="@binding[playbackRatio]"></spinner>
+                <inline id="camera-delete" class="ops" visible="@binding[cameraMode]">
+                    <button class="small" onclick="@binding[deleteCamera]">删除</button>
+                </inline>
+            </panel>
+            <panel title="球员">
+                <label style="margin:7px 3px 3px 3px;" text="@binding[playerCubeCount]"></label>
+                <textfield text="@binding[playerTitle]"></textfield>
+                <label style="margin:7px 3px 3px 3px;">球员位置:</label>
+                <vector>
+                    <spinner value="@binding[playerX]"></spinner>
+                    <spinner value="@binding[playerY]"></spinner>
+                    <spinner value="@binding[playerZ]"></spinner>
+                </vector>
+                <label style="margin:7px 3px 3px 3px;">缩放:</label>
+                <spinner min="0.1" step="0.1" precision="1" value="@binding[playerScale]"></spinner>
+                <label style="margin:7px 3px 3px 3px;">旋转:</label>
+                <spinner min="-180" max="180" step="1" precision="0" value="@binding[playerRotation]"></spinner>
+                <label style="margin:7px 3px 3px 3px;">方块大小:</label>
+                <spinner min="0.1" max="3" step="0.1" precision="1" value="@binding[cubeSize]"></spinner>
+                <inline id="player-delete" class="ops" visible="@binding[playerMode]">
+                    <button class="small" onclick="@binding[updateImage]">更新图片</button>
+                    <button class="small" onclick="@binding[deletePlayer]">删除</button>
+                </inline>
+            </panel>
+        </tab>
+    </hbox>
+</application>
