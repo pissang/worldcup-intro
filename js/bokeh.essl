@@ -1,6 +1,6 @@
 @export bokeh
 
-#define SAMPLES 3
+#define SAMPLES 4
 #define RINGS 3
 
 varying vec2 v_Texcoord;

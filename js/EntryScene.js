@@ -319,7 +319,7 @@ define(function(require) {
     }
 
     EntryScene.prototype.onMouseMove = function(e) {
-        var dx = e.pageX - this.renderer.width / 2;
+        var dx = e.pageX - this.renderer.getWidth() / 2;
         this.root.rotation.identity().rotateY(dx / 200);
     }
 

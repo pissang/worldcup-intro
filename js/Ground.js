@@ -14,7 +14,7 @@ define(function (require) {
         material.set('glossiness', 0.1);
         material.set('color', [1.5, 1.5, 1.5]);
 
-        var diffuseTex = new qtek.texture.Texture2D({
+        var diffuseTex = new qtek.Texture2D({
             wrapS: qtek.Texture.REPEAT,
             wrapT: qtek.Texture.REPEAT,
             anisotropic: 8

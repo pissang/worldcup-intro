@@ -92,7 +92,7 @@ define(function(require) {
         scene.add(new Ground());
 
         /////////////// Skydome
-        var skyTexture = new qtek.texture.Texture2D({
+        var skyTexture = new qtek.Texture2D({
             flipY: false
         });
         skyTexture.load(skyData);
@@ -378,7 +378,7 @@ define(function(require) {
         var cubes = this._cubes;
 
         camera.far = cameraFar;
-        camera.aspect = renderer.canvas.width / renderer.canvas.height;
+        camera.aspect = renderer.getViewportAspect();
 
         // Culling
         camera.update(true);
@@ -512,8 +512,8 @@ define(function(require) {
         for (var i = 0; i < count; i++) { 
 
             var cube = this._cubes[len - i - 1];
-            cube.parent.frustumCulling = false;
-            if (cube.parent != lastPlayer) {
+            cube.getParent().frustumCulling = false;
+            if (cube.getParent() != lastPlayer) {
                 lastPlayer.add(cube);
             }
 
@@ -601,7 +601,7 @@ define(function(require) {
     }
 
     MainScene.prototype.onMouseMove = function(e) {
-        var dx = e.pageX - this.renderer.width / 2;
+        var dx = e.pageX - this.renderer.getWidth() / 2;
         var offx = (dx - this._odx) / 700;
 
         var lastPlayer = this._players[this._players.length - 1];

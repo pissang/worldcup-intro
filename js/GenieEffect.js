@@ -169,13 +169,13 @@ define(function (require) {
     }
 
     GenieEffect.prototype.beforeRender = function(renderer) {
-        if (!this._texture || this._texture.width !== renderer.width || this._texture.height !== renderer.height) {
+        if (!this._texture || this._texture.width !== renderer.getWidth() || this._texture.height !== renderer.getHeight()) {
             if (this._texture) {
                 this._texture.dispose(renderer.gl);
             }
-            this._texture = new qtek.texture.Texture2D({
-                width: renderer.width,
-                height: renderer.height
+            this._texture = new qtek.Texture2D({
+                width: renderer.getWidth(),
+                height: renderer.getHeight()
             });
 
             this.mesh.material.set('diffuseMap', this._texture);

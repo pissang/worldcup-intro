@@ -20,8 +20,8 @@ define(function(require) {
                     parameters: {
                         // Half Float
                         type: floatEnabled ? 36193 : qtek.Texture.UNSIGNED_BYTE,
-                        width: function(renderer) {return renderer.width},
-                        height: function(renderer) {return renderer.height},
+                        width: function(renderer) {return renderer.getWidth()},
+                        height: function(renderer) {return renderer.getHeight()},
                         minFilter: qtek.Texture.NEAREST,
                         magFilter: qtek.Texture.NEAREST
                     }
@@ -29,8 +29,8 @@ define(function(require) {
                 depth: {
                     attachment: 'DEPTH_ATTACHMENT',
                     parameters: {
-                        width: function(renderer) {return renderer.width},
-                        height: function(renderer) {return renderer.height},
+                        width: function(renderer) {return renderer.getWidth()},
+                        height: function(renderer) {return renderer.getHeight()},
                         type: qtek.Texture.UNSIGNED_SHORT,
                         format: qtek.Texture.DEPTH_COMPONENT,
                         minFilter: qtek.Texture.NEAREST,
@@ -74,8 +74,8 @@ define(function(require) {
             compositor.addNode(sceneNode);
 
             compositor.updateParameters = function() {
-                bokehNode.setParameter('textureWidth', renderer.width);
-                bokehNode.setParameter('textureHeight', renderer.height);
+                bokehNode.setParameter('textureWidth', renderer.getWidth());
+                bokehNode.setParameter('textureHeight', renderer.getHeight());
 
                 bokehNode.setParameter('znear', camera.near);
                 bokehNode.setParameter('zfar', camera.far);
