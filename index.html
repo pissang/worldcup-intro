@@ -33,7 +33,8 @@
             require.config({
                 paths: {
                     qtek: 'lib/qtek',
-                    OIMO: 'lib/Oimo'
+                    OIMO: 'lib/Oimo',
+                    'worldcup-high': 'build/worldcup-high'
                 },
                 shim: {
                     'OIMO' : {
@@ -43,7 +44,7 @@
             });
             require([
                 'qtek',
-                'js/main'
+                'worldcup-high'
             ], function(qtek, main){
                 main.playBGM = function() {
                 }
