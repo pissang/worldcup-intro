@@ -4,9 +4,9 @@
     name: 'worldcup-high',
     // name: 'worldcup',
     paths: {
-        qtek: '../lib/qtek',
-        text: '../text',
-        OIMO: '../lib/Oimo.min'
+        qtek: 'lib/qtek',
+        text: 'text',
+        OIMO: 'lib/Oimo.min'
     },
     packages: [
         {

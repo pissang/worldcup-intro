@@ -472,7 +472,7 @@ define(function(require) {
         }).start();
         playbackRatioDeferred.during(function() {
             for (var i = 0; i < clips.length; i++) {
-                clips[i].playbackRatio = obj.playbackRatio;
+                clips[i].playbackRate = obj.playbackRatio;
             }
         }).start();
 
@@ -533,7 +533,7 @@ define(function(require) {
         }
 
         var newPos = new qtek.math.Vector3();
-        qtek.math.Vector3.scaleAndAdd(newPos, camera.position, camera.localTransform.forward, -25);
+        qtek.math.Vector3.scaleAndAdd(newPos, camera.position, camera.localTransform.z, -25);
         animation.animate(camera.position)
             .when(700, {
                 _array: newPos._array
@@ -591,7 +591,7 @@ define(function(require) {
         }
 
         var newPos = new qtek.math.Vector3();
-        qtek.math.Vector3.scaleAndAdd(newPos, camera.position, camera.localTransform.forward, 25);
+        qtek.math.Vector3.scaleAndAdd(newPos, camera.position, camera.localTransform.z, 25);
         animation.animate(camera.position)
             .when(800, {
                 _array: newPos._array
