@@ -1,4 +1,4 @@
-#2014 世界杯开幕式彩蛋动画
+# 2014 世界杯开幕式彩蛋动画
 
 <img src="./screenshots/1.png" width="700" alt="" />
 <img src="./screenshots/2.png" width="700" alt="" />
